@@ -83,7 +83,7 @@ def create_wordcloud_freq(table):
     wc = WordCloud(stopwords=[], mask=mask, background_color="white", max_words=200)
     wc.generate_from_frequencies(table)
     wc.recolor(color_func=color_func)
-    wc.to_file(os.path.join(currdir, "wordcloud.png"))
+    wc.to_file(os.path.join(currdir + "generated-wordclouds/", "wordcloud.png"))
 
 create_wordcloud_freq(create_table_from_senders())
 
