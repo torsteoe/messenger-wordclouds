@@ -1,6 +1,7 @@
 import json
 import wikipedia
 from wordcloud import WordCloud, STOPWORDS
+import random
 import os
 from PIL import Image
 import numpy as np
@@ -11,6 +12,8 @@ extra_words = """
 å alle at av både båe bare begge ble blei bli blir blitt då da de deg dei deim deira deires dem den denne der dere deres det dette di din disse ditt du dykk dykkar eg ein eit eitt eller elles en enn er et ett etter før for fordi fra ha hadde han hans har hennar henne hennes her hjå ho hoe honom hoss hossen hun hva hvem hver hvilke hvilken hvis hvor hvordan hvorfor i ikke ikkje ingen ingi inkje inn inni ja jeg kan kom korleis korso kun kunne kva kvar kvarhelst kven kvi kvifor man mange me med medan meg meget mellom men mi min mine mitt mot mykje nå når ned no noe noen noka noko nokon nokor nokre og også om opp oss over på så sånn samme seg selv si sia sidan siden sin sine sitt sjøl skal skulle slik so som somme somt til um upp ut uten vår være vært var vart varte ved vere verte vi vil ville vore vors vort
 """.split()
 
+def brown_color_func(word, font_size, position, orientation,  random_state=None,  **kwargs):
+    return "hsl(20, 0%, 0%)"
 currdir = os.path.dirname(__file__)
 def get_json_data_from_file(filename):
     with open(filename) as f:
@@ -49,34 +52,36 @@ def create_table_from_senders():
         else:
             table[message["sender_name"].split()[0]] = 0
     multiDictTable = multidict.MultiDict()
+    total = 0
     for key in table:
         if table[key] > maxFreq:
             maxFreq = table[key]
             maxName = key
         multiDictTable.add(key, table[key])
+        total += int(table[key])
+    for name in table:
+        print(name, " has ", int(table[name])/float(total)*100, "% ")
     print("Max is ", maxName, " with ", maxFreq, "messages")
-    print("Torstein has ", table["Torstein"], "words.")
+    
     return multiDictTable
 
 def create_wordcloud_freq(table):
-    mask = np.array(Image.open(os.path.join(currdir, "emoji.png")))
+    mask = np.array(Image.open(os.path.join(currdir, "cloud.png")))
     stopwords = set(STOPWORDS) | set(norwegian_stop_words)
-    print(stopwords)
     wc = WordCloud(stopwords=stopwords, mask=mask, background_color="white", max_words=200)
     wc.generate_from_frequencies(table)
+    wc.recolor(color_func=brown_color_func, random_state=3)
     wc.to_file(os.path.join(currdir, "wordcloud.png"))
 
 def create_table_from_content():
     data1 = get_json_data_from_file("message_1.json")
     data2 = get_json_data_from_file("message_2.json")
 
-    maxFreq = 0
-    maxName = ""
     table =dict()
     errors = 0
-    stopwords = set(STOPWORDS) | set(norwegian_stop_words)
+    stopwords = set(STOPWORDS) | set(norwegian_stop_words) |set(extra_words)
     for message in data1["messages"]:
-        try:
+        if "content" in message:
             message["content"] = message["content"].encode('latin_1').decode('utf-8')
             content = message["content"].split()
             for word in content:
@@ -86,11 +91,8 @@ def create_table_from_content():
                         table[word] +=1
                     else:
                         table[word] = 0
-        except:
-            errors+=1
-#            print("an error occured")
     for message in data2["messages"]:
-        try:
+        if "content" in message:
             message["content"] = message["content"].encode('latin_1').decode('utf-8')
             content = message["content"].split()
 
@@ -101,18 +103,10 @@ def create_table_from_content():
                         table[word] +=1
                     else:
                         table[word] = 0
-        except:
-            errors+=1
-#            print("an error occured") 
     multiDictTable = multidict.MultiDict()
-    print("errors", errors)
     for key in table:
-        if table[key] > maxFreq:
-            maxFreq = table[key]
-            maxName = key
         multiDictTable.add(key, table[key])
-    print("Max is ", maxName, " with ", maxFreq, "messages")
     return multiDictTable
+create_wordcloud_freq(create_table_from_senders())
 
-
-create_wordcloud_freq(create_table_from_content())
+#create_wordcloud_freq(create_table_from_content())
