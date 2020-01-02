@@ -1,5 +1,4 @@
 import json
-import wikipedia
 from wordcloud import WordCloud, STOPWORDS
 import random
 import os

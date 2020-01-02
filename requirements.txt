@@ -1,0 +1,5 @@
+wordcloud
+pillow
+numpy
+stop_words
+multidict
