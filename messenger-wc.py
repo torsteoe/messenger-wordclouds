@@ -81,7 +81,7 @@ def create_table_from_content():
     return multiDictTable
 
 def create_wordcloud_freq(table):
-    mask = np.array(Image.open(os.path.join(currdir, "cloud.png")))
+    mask = np.array(Image.open(os.path.join(currdir, "shapes/cloud.png")))
     wc = WordCloud(stopwords=[], mask=mask, background_color="white", max_words=200)
     wc.generate_from_frequencies(table)
     wc.recolor(color_func=color_func)
