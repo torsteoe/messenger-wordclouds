@@ -15,7 +15,7 @@ extra_words = """
 norwegian_stop_words = get_stop_words('norwegian')
 currdir = os.path.dirname(__file__)
 def color_func(word, font_size, position, orientation,  **kwargs):
-    return "hsl(20, 0%, " + str(random.randint(0,60)) + "%)"
+    return "hsl(223, 96%, " + str(random.randint(40,60)) + "%)"
 
 def get_json_data_from_file(filename):
     with open(filename) as f:
@@ -59,6 +59,8 @@ def update_table_content(table, message):
         content = message["content"].split()
         for word in content:
             word = word.lower()
+#            for char in ['.', ',', '?', ':', '@', ';', '"', '(', ')']:
+#                word = word.strip(char)
             if word not in stopwords:
                 if word in table:
                     table[word] +=1
@@ -74,24 +76,48 @@ def create_table_from_content():
     for i in range(num_files):
         for message in data[i]["messages"]:
             update_table_content(table, message)
-
     multiDictTable = multidict.MultiDict()
     for key in table:
         multiDictTable.add(key, table[key])
     return multiDictTable
+    
 
-def create_wordcloud_freq(table):
-    mask = np.array(Image.open(os.path.join(currdir, "shapes/cloud.png")))
-    wc = WordCloud(stopwords=[], mask=mask, background_color="white", max_words=200)
+def create_wordcloud_freq(table, shapeFile="cloud.png", outFile="wordcloud.png"):
+    mask = np.array(Image.open(os.path.join(currdir+ "shapes/"+shapeFile)))
+    wc = WordCloud(stopwords=[], mask=mask, background_color="white", max_words=600)
     wc.generate_from_frequencies(table)
     wc.recolor(color_func=color_func)
-    wc.to_file(os.path.join(currdir + "generated-wordclouds/", "wordcloud.png"))
+    wc.to_file(os.path.join(currdir + "generated-wordclouds/", outFile ))
 
 num_files = 0
 for file in os.listdir():
     if file.endswith(".json"):
         num_files += 1
 
-#create_wordcloud_freq(create_table_from_senders())
+shapeFileSenders = input("Name of shape-file for senders? Press enter for default: cloud.png")
+if shapeFileSenders == "":
+    shapeFileSenders = "cloud.png"
+while not (shapeFileSenders.endswith(".png")):
+    shapeFileSenders = input("File name must end with .png")
 
-create_wordcloud_freq(create_table_from_content())
+outFileSenders = input("Name of wordcloud-file for senders? Press enter for default: senders.png")
+if outFileSenders == "":
+    outFileSenders = "senders.png"
+while not (outFileSenders.endswith(".png")):
+    outFileSenders = input("File name must end with .png")
+
+shapeFileContent = input("Name of shape-file for senders? Press enter for default: cloud.png")
+if shapeFileContent == "":
+    shapeFileContent = "facebook-logo.png"
+while not (shapeFileContent.endswith(".png")):
+    shapeFileContent = input("File name must end with .png")
+
+outFileContent = input("Name of wordcloud-file for message content? Press enter for default: content.png")
+if outFileContent == "":
+    outFileContent = "content.png"
+while not (outFileContent.endswith(".png")):
+    outFileContent = input("File name must end with .png")
+
+create_wordcloud_freq(create_table_from_senders(), shapeFileSenders, outFileSenders)
+
+create_wordcloud_freq(create_table_from_content(), shapeFileContent, outFileContent)
