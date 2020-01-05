@@ -6,6 +6,8 @@ from PIL import Image
 import numpy as np
 from stop_words import get_stop_words
 import multidict as multidict
+from random_word import RandomWords
+
 
 
 extra_words = """
@@ -40,11 +42,17 @@ def create_table_from_senders():
 
     multiDictTable = multidict.MultiDict()
     total, maxFreq, maxName = 0, 0, ""
+    with open("names.txt") as file:
+        data = file.read()
+    names = data.split()
+    i = 0
     for key in table:
         if table[key] > maxFreq:
             maxFreq = table[key]
             maxName = key
-        multiDictTable.add(key, table[key])
+        #multiDictTable.add(key, table[key])
+        multiDictTable.add(names[i], table[key])
+        i+=1
         total += int(table[key])
         
     for name in table:
@@ -77,8 +85,18 @@ def create_table_from_content():
         for message in data[i]["messages"]:
             update_table_content(table, message)
     multiDictTable = multidict.MultiDict()
+    with open("words.txt") as file:
+        text = file.read()
+    words = text.split()
+    i = 0
     for key in table:
-        multiDictTable.add(key, table[key])
+        #replace with random_word
+        #multiDictTable.add(key, table[key])
+        if i<len(words):
+            multiDictTable.add(words[i], table[key])
+            i+= 1
+        else:
+            multiDictTable.add(key, table[key])
     return multiDictTable
     
 
