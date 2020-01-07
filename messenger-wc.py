@@ -42,16 +42,12 @@ def create_table_from_senders():
 
     multiDictTable = multidict.MultiDict()
     total, maxFreq, maxName = 0, 0, ""
-    with open("names.txt") as file:
-        data = file.read()
-    names = data.split()
     i = 0
     for key in table:
         if table[key] > maxFreq:
             maxFreq = table[key]
             maxName = key
-        #multiDictTable.add(key, table[key])
-        multiDictTable.add(names[i], table[key])
+        multiDictTable.add(key, table[key])
         i+=1
         total += int(table[key])
         
@@ -67,8 +63,6 @@ def update_table_content(table, message):
         content = message["content"].split()
         for word in content:
             word = word.lower()
-#            for char in ['.', ',', '?', ':', '@', ';', '"', '(', ')']:
-#                word = word.strip(char)
             if word not in stopwords:
                 if word in table:
                     table[word] +=1
@@ -85,18 +79,10 @@ def create_table_from_content():
         for message in data[i]["messages"]:
             update_table_content(table, message)
     multiDictTable = multidict.MultiDict()
-    with open("words.txt") as file:
-        text = file.read()
     words = text.split()
     i = 0
     for key in table:
-        #replace with random_word
-        #multiDictTable.add(key, table[key])
-        if i<len(words):
-            multiDictTable.add(words[i], table[key])
-            i+= 1
-        else:
-            multiDictTable.add(key, table[key])
+        multiDictTable.add(key, table[key])
     return multiDictTable
     
 
@@ -120,7 +106,7 @@ while not (shapeFileSenders.endswith(".png")):
 
 outFileSenders = input("Name of wordcloud-file for senders? Press enter for default: senders.png")
 if outFileSenders == "":
-    outFileSenders = "senders.png"
+    outFileSenders = "senders-wordcloud.png"
 while not (outFileSenders.endswith(".png")):
     outFileSenders = input("File name must end with .png")
 
@@ -132,7 +118,7 @@ while not (shapeFileContent.endswith(".png")):
 
 outFileContent = input("Name of wordcloud-file for message content? Press enter for default: content.png")
 if outFileContent == "":
-    outFileContent = "content.png"
+    outFileContent = "content-wordcloud.png"
 while not (outFileContent.endswith(".png")):
     outFileContent = input("File name must end with .png")
 
