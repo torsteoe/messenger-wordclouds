@@ -6,7 +6,6 @@ from PIL import Image
 import numpy as np
 from stop_words import get_stop_words
 import multidict as multidict
-from random_word import RandomWords
 
 
 
