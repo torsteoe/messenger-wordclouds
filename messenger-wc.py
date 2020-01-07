@@ -79,7 +79,6 @@ def create_table_from_content():
         for message in data[i]["messages"]:
             update_table_content(table, message)
     multiDictTable = multidict.MultiDict()
-    words = text.split()
     i = 0
     for key in table:
         multiDictTable.add(key, table[key])
@@ -104,7 +103,7 @@ if shapeFileSenders == "":
 while not (shapeFileSenders.endswith(".png")):
     shapeFileSenders = input("File name must end with .png")
 
-outFileSenders = input("Name of wordcloud-file for senders? Press enter for default: senders.png")
+outFileSenders = input("Name of wordcloud-file for senders? Press enter for default: senders-wordcloud.png")
 if outFileSenders == "":
     outFileSenders = "senders-wordcloud.png"
 while not (outFileSenders.endswith(".png")):
@@ -116,7 +115,7 @@ if shapeFileContent == "":
 while not (shapeFileContent.endswith(".png")):
     shapeFileContent = input("File name must end with .png")
 
-outFileContent = input("Name of wordcloud-file for message content? Press enter for default: content.png")
+outFileContent = input("Name of wordcloud-file for message content? Press enter for default: content-wordcloud.png")
 if outFileContent == "":
     outFileContent = "content-wordcloud.png"
 while not (outFileContent.endswith(".png")):
